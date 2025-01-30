@@ -16,6 +16,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=lo
 async def clean_x_links(update: Update, context):
     """Detects Twitter/X links, cleans them, and reposts the cleaned link."""
     message = update.message.text
+    chat_id = update.message.chat_id  # Get chat ID before deleting the message
 
     # Search for Twitter/X links
     match = X_LINK_REGEX.search(message)
@@ -31,8 +32,8 @@ async def clean_x_links(update: Update, context):
         except Exception as e:
             logging.warning(f"Failed to delete message: {e}")
 
-        # Send cleaned link back to chat
-        await update.message.reply_text(f"✅ Cleaned Link: {cleaned_link}")
+        # Send cleaned link back separately (not as a reply)
+        await context.bot.send_message(chat_id=chat_id, text=f"✅ Cleaned Link: {cleaned_link}")
 
 async def start(update: Update, context):
     """Handles /start command."""
